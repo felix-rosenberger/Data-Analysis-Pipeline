@@ -1,61 +1,50 @@
-# P1
-SELECT COUNT(*)
-FROM `data-to-insights.ecommerce.all_sessions_raw`
-
-# P2
-SELECT COUNT(*)
-FROM `data-to-insights.ecommerce.all_sessions`
-
-# P3
+/* check the min and max date of the records in the all_sessions using date */
 SELECT MIN(date) AS EarliestDate, MAX(date) AS LatestDate
-FROM `data-to-insights.ecommerce.all_sessions`
+FROM `data-to-insights.ecommerce.all_sessions`;
 
-# P4
-# get total unique visitors and number of product views
+/* get total unique visitors and number of product views */
 SELECT
   COUNT(DISTINCT fullVisitorId) AS unique_visitors,
   COUNT(v2ProductName) AS product_views,
-FROM `data-to-insights.ecommerce.all_sessions`
+FROM `data-to-insights.ecommerce.all_sessions`;
 
-# P5
+/* get total unique visitors (fullVisitorID) by the referring site (channelGrouping) */
 SELECT channelGrouping, COUNT(DISTINCT fullVisitorId) AS UniqueVisitors
 FROM `data-to-insights.ecommerce.all_sessions`
 GROUP BY channelGrouping
-ORDER BY UniqueVisitors DESC
+ORDER BY UniqueVisitors DESC;
 
-# P6
+/* list all the unique product names (v2ProductName) alphabetically */
 SELECT DISTINCT v2ProductName 
 FROM `data-to-insights.ecommerce.all_sessions`
-ORDER BY v2ProductName
+ORDER BY v2ProductName;
 
-# P7
+/* return the number of duplicate records in the “all_sessions_raw” table. */
 SELECT SUM(a.Duplicates) AS DuplicateRecords
 FROM (
     SELECT *, COUNT(*) AS Duplicates
     FROM `data-to-insights.ecommerce.all_sessions_raw`
     GROUP BY fullVisitorId, channelGrouping, time, country, city, totalTransactionRevenue, transactions, timeOnSite, pageviews, sessionQualityDim, date, visitId, type, productRefundAmount, productQuantity, productPrice, productRevenue, productSKU, v2ProductName, v2ProductCategory, productVariant, currencyCode, itemQuantity, itemRevenue, transactionRevenue, transactionId, pageTitle, searchKeyword, pagePathLevel1, eCommerceAction_type, eCommerceAction_step, eCommerceAction_option
     HAVING COUNT(*) > 1
-) a
+) a;
 
-# P8
+/* show that there are no duplicate records in the “all_sessions” table */
  SELECT *, COUNT(*) AS Duplicates
     FROM `data-to-insights.ecommerce.all_sessions`
     GROUP BY fullVisitorId, channelGrouping, time, country, city, totalTransactionRevenue, transactions, timeOnSite, pageviews, sessionQualityDim, date, visitId, type, productRefundAmount, productQuantity, productPrice, productRevenue, productSKU, v2ProductName, v2ProductCategory, productVariant, currencyCode, itemQuantity, itemRevenue, transactionRevenue, transactionId, pageTitle, searchKeyword, pagePathLevel1, eCommerceAction_type, eCommerceAction_step, eCommerceAction_option
-    HAVING COUNT(*) > 1
+    HAVING COUNT(*) > 1;
 
-# P9
-# list five products with most views from all visitors
+/* list the five products with the most views (product_views) from all visitors */
 SELECT 
   v2ProductName,
   COUNT(v2ProductName) AS product_views
 FROM `data-to-insights.ecommerce.all_sessions`
 GROUP BY v2ProductName
 ORDER BY product_views DESC
-LIMIT 5
+LIMIT 5;
 
-# P10
-# list top 5 products while only count products a single time per visitorId
-# first group each id with each product, then count them by product
+/* list the five products with the most views (product_views) for unique visitorId.
+First group each id with each product, then count products */
 WITH unique_counts_per_visitor AS (
   SELECT
     fullVisitorId,
@@ -69,9 +58,9 @@ SELECT
 FROM unique_counts_per_visitor
 GROUP BY unique_counts_per_visitor.products
 ORDER BY unique_counts DESC
-LIMIT 5
+LIMIT 5;
 
-# P11
+/* include the total number of distinct products ordered and the total number of total units ordered (productQuantity)  */
 SELECT
   v2ProductName,
   COUNT(*) AS product_views,
@@ -82,7 +71,7 @@ GROUP BY v2ProductName
 ORDER BY product_views DESC
 LIMIT 5;
 
-# P12
+/* include the average amount of product per order */
 SELECT
   v2ProductName,
   COUNT(*) AS product_views,
