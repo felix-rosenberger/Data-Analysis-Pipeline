@@ -94,6 +94,7 @@ with DAG(dag_id='assignment_3_dag',
         create_disposition='CREATE_IF_NEEDED', 
         dag=dag
     )
+    # export to GCP storage
     P12_export_bash = bash_operator.BashOperator(
         task_id='P12_export_bash',
         bash_command=   "bq extract --destination_format CSV \
